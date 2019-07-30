@@ -1,0 +1,14 @@
+#!/bin/bash
+
+id=$RANDOM
+if [[ ! -d $id ]]; then
+    mkdir $id
+    echo "Producing human #$id"
+    http --download https://thispersondoesnotexist.com/image --output "$id/human$id.jpg" &>/dev/null
+    if [[ $1 == '--preview' ]]; then open $id/human$id.jpg; fi
+    resp=$(http POST "https://api.haystack.ai/api/image/analyze?output=json&apikey=$(cat haykey)" @$id/human$id.jpg -b)
+    fields="gender age ethnicity"
+    for field in $fields; do
+	printf "$field:\t%s\n" $(echo $resp | sed -En "s/.*\"$field\":\"?([^{\",]*).*/\1/p") >> $id/report$id.txt
+    done
+fi

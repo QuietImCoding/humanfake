@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ls -F | egrep '^[[:digit:]]+' | xargs rm -rf
